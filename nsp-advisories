@@ -4,7 +4,7 @@ TMP=/tmp/nsp-view
 mkdir -p $TMP
 
 (nsp check --reporter=json > $TMP/nsp.json || exit 0)
-cat $TMP/nsp.json | jq '.[] | .advisory + " (" + (.cvss_score | tostring) + ")"' | sort | uniq | sed 's/"//g'
+cat $TMP/nsp.json | jq '.[] | .advisory + " (cvss: " + (.cvss_score | tostring) + ")"' | sort | uniq | sed 's/"//g'
 
 rm -f $TMP/*
 
