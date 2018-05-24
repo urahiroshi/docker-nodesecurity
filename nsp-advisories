@@ -1,10 +1,10 @@
 #!/bin/bash -eu
 
 TMP=/tmp/nsp-view
+NSP_JSON=$TMP/nsp.json
 mkdir -p $TMP
 
-(nsp check --reporter=json > $TMP/nsp.json || exit 0)
-cat $TMP/nsp.json | jq '.[] | .advisory + " (cvss: " + (.cvss_score | tostring) + ")"' | sort | uniq | sed 's/"//g'
+(nsp check --reporter=json > $NSP_JSON || exit 0)
+cat $NSP_JSON | jq '.[] | .advisory + " (cvss: " + (.cvss_score | tostring) + ")"' | sort | uniq | sed 's/"//g'
 
 rm -f $TMP/*
-

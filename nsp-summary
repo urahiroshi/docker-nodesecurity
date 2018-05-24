@@ -1,11 +1,16 @@
 #!/bin/bash -eu
 
 TMP=/tmp/nsp-view
+NSP_JSON=$TMP/nsp.json
+NSP_ADVISORIES=$TMP/nsp_advisories.log
 mkdir -p $TMP
 
-(nsp check --reporter=json > $TMP/nsp.json || exit 0)
-cat $TMP/nsp.json | jq '.[] | .advisory + " " + (.cvss_score | tostring)' | sort | uniq | sed 's/"//g' > $TMP/nsp_advisories.log
-while read advisory cvss; do echo "$advisory (cvss: $cvss)"; cat nsp.json | jq ".[] | select(.advisory == \"$advisory\") | .path | join(\" > \")" | sed 's/^/  /'; done < $TMP/nsp_advisories.log
+(nsp check --reporter=json > $NSP_JSON || exit 0)
+cat $NSP_JSON | jq '.[] | .advisory + " " + (.cvss_score | tostring)' | sort | uniq | sed 's/"//g' > $NSP_ADVISORIES
+while read advisory cvss
+do
+  echo "$advisory (cvss: $cvss)";
+  cat $NSP_JSON | jq ".[] | select(.advisory == \"$advisory\") | .path | join(\" > \")" | sed 's/^/  /'
+done < $NSP_ADVISORIES
 
 rm -f $TMP/*
-
